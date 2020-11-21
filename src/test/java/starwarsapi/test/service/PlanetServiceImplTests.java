@@ -1,6 +1,8 @@
-package starwarsapi.unittest.service;
+package starwarsapi.test.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -61,14 +63,22 @@ public class PlanetServiceImplTests {
 
     @Test
     private void testCreate() {
-        Planet planet = new Planet().withName("Mars").withClimate("Cold").withTerrain("Desert");
+        Planet planet = new Planet()
+            .withName("Mars")
+            .withClimate("Cold")
+            .withTerrain("Desert");
+
         SwPlanet swPlanet = new SwPlanet()
             .withName(planet.getName())
             .withFilms(List.of("The Martian"));
 
+        Planet expected = planet.withTotalFilmAppearances(swPlanet.getFilms().size());
+
         when(swPlanetService.findOneByName(planet.getName())).thenReturn(Optional.of(swPlanet));
-        when(planetRepo.insert(planet.withTotalFilmAppearances(swPlanet.getFilms().size())));
+        when(planetRepo.insert(expected)).thenReturn(expected);
 
         Planet actual = planetService.create(planet);
+
+        assertEquals(expected, actual);
     }
 }

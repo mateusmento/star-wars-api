@@ -1,4 +1,4 @@
-package starwarsapi.unittest.swapi;
+package starwarsapi.test.swapi;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
