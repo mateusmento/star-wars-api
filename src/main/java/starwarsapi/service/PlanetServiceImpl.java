@@ -38,7 +38,7 @@ public class PlanetServiceImpl implements PlanetService {
     }
 
     public void delete(String id) {
-        if (planetRepo.existsById(id))
+        if (!planetRepo.existsById(id))
             throw new PlanetNotFoundException();
         planetRepo.deleteById(id);
     }
