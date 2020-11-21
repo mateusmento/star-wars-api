@@ -15,17 +15,20 @@ import starwarsapi.service.PlanetServiceImpl;
 public class PlanetController {
 
     @Autowired
-    private PlanetRepository repo;
+    private PlanetServiceImpl service;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Planet> list() {
-        return repo.findAll();
+    public Page<Planet> list(PlanetFilter filter) {
+        return service.list(filter);
     }
 
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
     public Planet findById(@PathVariable String id) {
+        return service.findById(id);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Planet create(@RequestBody Planet planet) {
