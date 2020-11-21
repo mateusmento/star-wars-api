@@ -2,33 +2,33 @@ package starwarsapi.swapi;
 
 import java.util.Optional;
 
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import reactor.core.publisher.Flux;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Service
 public class SwPlanetServiceImpl implements SwPlanetService {
 
+    @Resource
+    @Qualifier("swapi")
     private WebClient http;
 
-    public SwPlanetServiceImpl() {
-        http = WebClient.create("https://swapi.dev/api");
+    public Optional<SwPlanet> findOneByName(String name) {
+        return findByName(name).search(name);
     }
 
-    public Flux<Optional<SwPlanet>> findOneByName(String name) {
-        var res = http.get()
-            .uri(builder -> builder.path("/planets").queryParam("search", name).build())
-            .retrieve();
-
-        var flux = res.bodyToFlux(SwPlanetPage.class)
-            .map(page -> {
-                var res1 = page.getResults().stream()
-                    .filter(p -> p.getName().toLowerCase().equals(name.toLowerCase()))
-                    .findAny();
-                return res1;
-            });
-
-        return flux;
+    public SwPlanetPage findByName(String name) {
+        try {
+            return http.get().uri("/planets?search=" + name)
+                .retrieve()
+                .bodyToMono(SwPlanetPage.class)
+                .block();
+        } catch (WebClientResponseException ex) {
+            System.err.println(ex);
+            return new SwPlanetPage();
+        }
     }
 }
